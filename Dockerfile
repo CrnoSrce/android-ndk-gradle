@@ -12,12 +12,16 @@ ENV ANDROID_HOME="$USER_HOME_DIR/android-sdk"
 ENV SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip"
 ENV GRADLE_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
 
+# Start as root to create the user's work directory, etc
+USER root
+
 # To silence the build message about this file being missing
-RUN mkdir -p /root/.android/ && touch /root/.android/repositories.cfg
+RUN mkdir -p /$USER_NAME/.android/ && touch /$USER_NAME/.android/repositories.cfg
 
 # Create a non-root user
-RUN useradd -m user
-USER user
+RUN useradd -m $USER_NAME
+RUN chown $USER_NAME /$USER_NAME
+USER $USER_NAME
 WORKDIR $USER_HOME_DIR
 
 # Download Android SDK + NDK
